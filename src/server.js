@@ -17,12 +17,24 @@ app.use(morgan('dev'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/emlak-sitesi', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
+console.log('Attempting to connect to MongoDB...');
+mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 30000,
+    socketTimeoutMS: 45000,
+    family: 4
 })
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error('MongoDB connection error:', err));
+.then(() => {
+    console.log('Successfully connected to MongoDB Atlas');
+})
+.catch(err => {
+    console.error('MongoDB connection error details:', {
+        name: err.name,
+        message: err.message,
+        code: err.code
+    });
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
