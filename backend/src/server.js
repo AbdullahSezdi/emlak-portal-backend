@@ -1,10 +1,10 @@
 const express = require('express');
-const { Sequelize } = require('sequelize');
 const cors = require('cors');
 const morgan = require('morgan');
 const path = require('path');
 const propertyRoutes = require('./routes/propertyRoutes');
 const authRoutes = require('./routes/authRoutes');
+const sequelize = require('./config/database');
 const Property = require('./models/Property');
 const seedDatabase = require('./seedData');
 
@@ -27,37 +27,25 @@ app.get('/', (req, res) => {
 app.use('/api/properties', propertyRoutes);
 app.use('/api/auth', authRoutes);
 
-// PostgreSQL connection
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-    dialect: 'postgres',
-    protocol: 'postgres',
-    dialectOptions: {
-        ssl: {
-            require: true,
-            rejectUnauthorized: false
-        }
+// Test the connection and sync database
+const initializeDatabase = async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('Connected to PostgreSQL database');
+        
+        // Sync all models
+        await sequelize.sync();
+        console.log('Database synchronized');
+        
+        // Seed the database with sample data
+        await seedDatabase(Property);
+        console.log('Database seeded successfully');
+    } catch (error) {
+        console.error('Database connection error:', error);
     }
-});
+};
 
-// Test the connection
-sequelize.authenticate()
-    .then(async () => {
-        console.log('Connected to PostgreSQL');
-        try {
-            // Sync all models
-            await sequelize.sync();
-            console.log('Database synchronized');
-            
-            // Seed the database with sample data
-            await seedDatabase(Property);
-            console.log('Database seeded successfully');
-        } catch (error) {
-            console.error('Error setting up database:', error);
-        }
-    })
-    .catch(error => {
-        console.error('PostgreSQL connection error:', error);
-    });
+initializeDatabase();
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -72,12 +60,6 @@ app.use((req, res) => {
 });
 
 const PORT = process.env.PORT || 5001;
-const server = app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on http://localhost:${PORT}`);
-    console.log('Available routes:');
-    app._router.stack.forEach((r) => {
-        if (r.route && r.route.path) {
-            console.log(`${Object.keys(r.route.methods)} ${r.route.path}`);
-        }
-    });
 });
