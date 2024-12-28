@@ -1,53 +1,71 @@
 const express = require('express');
+const Property = require('../models/Property');
 const router = express.Router();
-const multer = require('multer');
-const path = require('path');
-const auth = require('../middleware/auth');
-const {
-  getAllProperties,
-  createProperty,
-  getProperty,
-  updateProperty,
-  deleteProperty,
-  getDashboardStats
-} = require('../controllers/propertyController');
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'src/uploads/');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({
-  storage,
-  fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|webp/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-
-    if (extname && mimetype) {
-      return cb(null, true);
+// Get all properties
+router.get('/properties', async (req, res) => {
+    try {
+        const properties = await Property.findAll();
+        res.json(properties);
+    } catch (error) {
+        console.error('Error fetching properties:', error);
+        res.status(500).json({ message: 'Error fetching properties' });
     }
-    cb(new Error('Only image files are allowed!'));
-  },
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit
-  }
 });
 
-// Public routes
-router.get('/properties', getAllProperties);
-router.get('/properties/:id', getProperty);
+// Get single property
+router.get('/properties/:id', async (req, res) => {
+    try {
+        const property = await Property.findByPk(req.params.id);
+        if (!property) {
+            return res.status(404).json({ message: 'Property not found' });
+        }
+        res.json(property);
+    } catch (error) {
+        console.error('Error fetching property:', error);
+        res.status(500).json({ message: 'Error fetching property' });
+    }
+});
 
-// Protected routes
-router.post('/properties', auth, upload.array('images', 10), createProperty);
-router.put('/properties/:id', auth, upload.array('images', 10), updateProperty);
-router.delete('/properties/:id', auth, deleteProperty);
-router.get('/dashboard/stats', auth, getDashboardStats);
+// Create property
+router.post('/properties', async (req, res) => {
+    try {
+        const property = await Property.create(req.body);
+        res.status(201).json(property);
+    } catch (error) {
+        console.error('Error creating property:', error);
+        res.status(500).json({ message: 'Error creating property' });
+    }
+});
+
+// Update property
+router.put('/properties/:id', async (req, res) => {
+    try {
+        const property = await Property.findByPk(req.params.id);
+        if (!property) {
+            return res.status(404).json({ message: 'Property not found' });
+        }
+        await property.update(req.body);
+        res.json(property);
+    } catch (error) {
+        console.error('Error updating property:', error);
+        res.status(500).json({ message: 'Error updating property' });
+    }
+});
+
+// Delete property
+router.delete('/properties/:id', async (req, res) => {
+    try {
+        const property = await Property.findByPk(req.params.id);
+        if (!property) {
+            return res.status(404).json({ message: 'Property not found' });
+        }
+        await property.destroy();
+        res.json({ message: 'Property deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting property:', error);
+        res.status(500).json({ message: 'Error deleting property' });
+    }
+});
 
 module.exports = router; 
