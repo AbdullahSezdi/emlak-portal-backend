@@ -1,53 +1,41 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
 
-const propertySchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  price: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  area: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  location: {
-    type: String,
-    required: true
-  },
-  features: [{
-    type: String,
-    trim: true
-  }],
-  images: [{
-    type: String,
-    required: true
-  }],
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  }
+const Property = sequelize.define('Property', {
+    title: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
+    price: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false
+    },
+    location: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    type: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    status: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    features: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        defaultValue: []
+    },
+    images: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        defaultValue: []
+    }
+}, {
+    timestamps: true
 });
-
-// Middleware to update the updatedAt field before saving
-propertySchema.pre('save', function(next) {
-  this.updatedAt = Date.now();
-  next();
-});
-
-const Property = mongoose.model('Property', propertySchema);
 
 module.exports = Property; 

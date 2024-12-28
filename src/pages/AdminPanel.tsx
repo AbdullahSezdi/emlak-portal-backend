@@ -646,7 +646,7 @@ const AdminPanel: React.FC = () => {
                                             }}
                                         >
                                             {property.features?.zoning || 'Belirtilmemiş'}
-                                        </Typography>
+            </Typography>
                                     </TableCell>
                                     <TableCell align="center">
                                         <Tooltip title="Düzenle">
@@ -1058,7 +1058,7 @@ const AdminPanel: React.FC = () => {
                                         }
                                     }}
                                 />
-                            </Button>
+                                </Button>
                         </Grid>
                     </Grid>
                 </DialogContent>

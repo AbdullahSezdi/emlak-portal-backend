@@ -1687,16 +1687,16 @@ const HomePage: React.FC = () => {
                 <StatsSection />
 
                 {/* Filtreleme Bölümü */}
-                <FilterSection 
-                    selectedCity={selectedCity}
-                    setSelectedCity={setSelectedCity}
-                    selectedDistrict={selectedDistrict}
-                    setSelectedDistrict={setSelectedDistrict}
-                    priceRange={priceRange}
-                    setPriceRange={setPriceRange}
-                    areaRange={areaRange}
-                    handleAreaInputChange={handleAreaInputChange}
-                />
+            <FilterSection 
+                selectedCity={selectedCity}
+                setSelectedCity={setSelectedCity}
+                selectedDistrict={selectedDistrict}
+                setSelectedDistrict={setSelectedDistrict}
+                priceRange={priceRange}
+                setPriceRange={setPriceRange}
+                areaRange={areaRange}
+                handleAreaInputChange={handleAreaInputChange}
+            />
 
                 {/* İlan Listesi */}
                 <Box sx={{ 
@@ -1717,11 +1717,11 @@ const HomePage: React.FC = () => {
                             fontSize: { xs: '1.75rem', md: '2.25rem' }
                         }}
                     >
-                        Satılık Arsalar
-                    </Typography>
-                    <Chip 
-                        label={`${properties.length} ilan`}
-                        color="primary"
+                    Satılık Arsalar
+                </Typography>
+                <Chip 
+                    label={`${properties.length} ilan`}
+                    color="primary"
                         sx={{ 
                             fontSize: '0.95rem', 
                             height: 32,
@@ -1731,14 +1731,14 @@ const HomePage: React.FC = () => {
                                 px: 2
                             }
                         }}
-                    />
-                </Box>
-                
-                <Grid container spacing={3}>
+                />
+            </Box>
+            
+            <Grid container spacing={3}>
                     {currentProperties.map((property) => (
-                        <PropertyCard key={property.id} property={property} />
-                    ))}
-                </Grid>
+                    <PropertyCard key={property.id} property={property} />
+                ))}
+            </Grid>
 
                 {/* Pagination */}
                 {properties.length > itemsPerPage && (
@@ -1771,29 +1771,29 @@ const HomePage: React.FC = () => {
                     </Box>
                 )}
 
-                {properties.length === 0 && (
-                    <Box 
-                        sx={{ 
-                            textAlign: 'center', 
-                            mt: 8,
-                            p: 6,
+            {properties.length === 0 && (
+                <Box 
+                    sx={{ 
+                        textAlign: 'center', 
+                        mt: 8,
+                        p: 6,
                             bgcolor: 'rgba(255, 255, 255, 0.8)',
-                            borderRadius: 4,
-                            border: '1px dashed',
+                        borderRadius: 4,
+                        border: '1px dashed',
                             borderColor: 'divider',
                             backdropFilter: 'blur(8px)'
-                        }}
-                    >
-                        <Typography variant="h6" color="text.secondary" gutterBottom>
-                            Aramanıza uygun ilan bulunamadı
-                        </Typography>
-                        <Typography color="text.secondary">
-                            Lütfen farklı filtreleme seçeneklerini deneyin
-                        </Typography>
-                    </Box>
-                )}
+                    }}
+                >
+                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                        Aramanıza uygun ilan bulunamadı
+                    </Typography>
+                    <Typography color="text.secondary">
+                        Lütfen farklı filtreleme seçeneklerini deneyin
+                    </Typography>
                 </Box>
-            </Container>
+            )}
+                </Box>
+        </Container>
 
             {/* Footer */}
             <Footer />

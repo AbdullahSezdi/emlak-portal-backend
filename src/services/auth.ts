@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5001/api';
+const API_URL = 'https://emlak-portal-backend.onrender.com/api';
 
 export const authApi = {
     login: async (username: string, password: string) => {

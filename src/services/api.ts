@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { authApi } from './auth';
 
-export const API_URL = 'http://localhost:5001/api';
+export const API_URL = 'https://emlak-portal-backend.onrender.com/api';
 
 const api = axios.create({
     baseURL: API_URL,

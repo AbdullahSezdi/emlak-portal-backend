@@ -56,4 +56,26 @@ exports.createFirstAdmin = async (req, res) => {
     console.error('Create admin error:', error);
     res.status(500).json({ message: 'Server error' });
   }
+};
+
+exports.createAdmin = async (req, res) => {
+    try {
+        // Check if any admin exists
+        const adminExists = await Admin.findOne();
+        if (adminExists) {
+            return res.status(400).json({ message: 'Admin hesabı zaten mevcut' });
+        }
+
+        // Create new admin with fixed credentials
+        const admin = new Admin({
+            username: 'hacı',
+            password: 'mekanınsahibi'
+        });
+
+        await admin.save();
+        res.status(201).json({ message: 'Admin hesabı oluşturuldu' });
+    } catch (error) {
+        console.error('Create admin error:', error);
+        res.status(500).json({ message: 'Sunucu hatası' });
+    }
 }; 
