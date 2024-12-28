@@ -1,20 +1,25 @@
-const mongoose = require('mongoose');
+const { Model, DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
 
-const adminSchema = new mongoose.Schema({
+class Admin extends Model {}
+
+Admin.init({
     username: {
-        type: String,
-        required: true,
+        type: DataTypes.STRING,
+        allowNull: false,
         unique: true,
-        trim: true
+        validate: {
+            notEmpty: true
+        }
     },
     password: {
-        type: String,
-        required: true
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
+        type: DataTypes.STRING,
+        allowNull: false
     }
+}, {
+    sequelize,
+    modelName: 'Admin',
+    timestamps: true // This will automatically manage createdAt
 });
 
-module.exports = mongoose.model('Admin', adminSchema); 
+module.exports = Admin; 

@@ -1,62 +1,63 @@
-const mongoose = require('mongoose');
+const { Model, DataTypes } = require('sequelize');
+const sequelize = require('../config/database');
 
-const propertySchema = new mongoose.Schema({
+class Property extends Model {}
+
+Property.init({
     title: {
-        type: String,
-        required: true,
-        trim: true
-    },
-    description: {
-        type: String,
-        required: true
-    },
-    price: {
-        type: Number,
-        required: true,
-        min: 0
-    },
-    area: {
-        type: Number,
-        required: true,
-        min: 0
-    },
-    location: {
-        city: {
-            type: String,
-            required: true
-        },
-        district: {
-            type: String,
-            required: true
-        },
-        address: {
-            type: String,
-            required: true
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: true
         }
     },
-    features: {
-        zoning: String,
-        parcelNo: String,
-        blockNo: String
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: false
     },
-    images: [{
-        type: String, // URL veya dosya yolu
-        required: true
-    }],
-    createdAt: {
-        type: Date,
-        default: Date.now
+    price: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+        validate: {
+            min: 0
+        }
     },
-    updatedAt: {
-        type: Date,
-        default: Date.now
+    area: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false,
+        validate: {
+            min: 0
+        }
+    },
+    city: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    district: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    address: {
+        type: DataTypes.TEXT,
+        allowNull: false
+    },
+    zoning: {
+        type: DataTypes.STRING
+    },
+    parcelNo: {
+        type: DataTypes.STRING
+    },
+    blockNo: {
+        type: DataTypes.STRING
+    },
+    images: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        defaultValue: []
     }
+}, {
+    sequelize,
+    modelName: 'Property',
+    timestamps: true // This will automatically manage createdAt and updatedAt
 });
 
-// Güncelleme zamanını otomatik güncelle
-propertySchema.pre('save', function(next) {
-    this.updatedAt = Date.now();
-    next();
-});
-
-module.exports = mongoose.model('Property', propertySchema); 
+module.exports = Property; 

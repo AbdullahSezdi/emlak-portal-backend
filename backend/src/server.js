@@ -1,5 +1,5 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const { Sequelize } = require('sequelize');
 const cors = require('cors');
 const morgan = require('morgan');
 const path = require('path');
@@ -27,24 +27,37 @@ app.get('/', (req, res) => {
 app.use('/api/properties', propertyRoutes);
 app.use('/api/auth', authRoutes);
 
-// MongoDB connection
-mongoose.connect('mongodb://127.0.0.1:27017/emlak-sitesi', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(async () => {
-    console.log('Connected to MongoDB');
-    try {
-        // Seed the database with sample data
-        await seedDatabase(Property);
-        console.log('Database seeded successfully');
-    } catch (error) {
-        console.error('Error seeding database:', error);
+// PostgreSQL connection
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    protocol: 'postgres',
+    dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false
+        }
     }
-})
-.catch((error) => {
-    console.error('MongoDB connection error:', error);
 });
+
+// Test the connection
+sequelize.authenticate()
+    .then(async () => {
+        console.log('Connected to PostgreSQL');
+        try {
+            // Sync all models
+            await sequelize.sync();
+            console.log('Database synchronized');
+            
+            // Seed the database with sample data
+            await seedDatabase(Property);
+            console.log('Database seeded successfully');
+        } catch (error) {
+            console.error('Error setting up database:', error);
+        }
+    })
+    .catch(error => {
+        console.error('PostgreSQL connection error:', error);
+    });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -58,7 +71,7 @@ app.use((req, res) => {
     res.status(404).json({ message: 'Route not found' });
 });
 
-const PORT = 5001;
+const PORT = process.env.PORT || 5001;
 const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on http://localhost:${PORT}`);
     console.log('Available routes:');
