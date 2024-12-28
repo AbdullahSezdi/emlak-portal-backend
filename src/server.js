@@ -17,27 +17,16 @@ app.use(morgan('dev'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect to MongoDB
-console.log('Attempting to connect to MongoDB with URI:', process.env.MONGODB_URI);
+console.log('Attempting to connect to MongoDB...');
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 30000,
-    socketTimeoutMS: 45000,
-    family: 4,
-    directConnection: true,
-    retryWrites: true,
-    w: 'majority'
+    useUnifiedTopology: true
 })
 .then(() => {
     console.log('Successfully connected to MongoDB Atlas');
 })
 .catch(err => {
-    console.error('MongoDB connection error details:', {
-        name: err.name,
-        message: err.message,
-        code: err.code,
-        stack: err.stack
-    });
+    console.error('MongoDB connection error:', err.message);
 });
 
 // Routes
